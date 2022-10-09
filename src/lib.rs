@@ -108,7 +108,7 @@ impl AltoError {
 
 impl fmt::Display for AltoError {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-		write!(f, "{}", self.description())
+		write!(f, "{}", self.to_string())
 	}
 }
 
@@ -145,7 +145,7 @@ impl From<io::Error> for AltoError {
 
 
 impl From<ext::ExtensionError> for AltoError {
-	fn from(_: ext::ExtensionError) -> AltoError {
+	fn from(err: ext::ExtensionError) -> AltoError {
 		AltoError::ExtensionNotPresent
 	}
 }

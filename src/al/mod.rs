@@ -109,87 +109,87 @@ pub unsafe trait Source {
 	/// `alGetSourcei(AL_SOURCE_RELATIVE)`
 	fn relative(&self) -> bool;
 	/// `alSourcei(AL_SOURCE_RELATIVE)`
-	fn set_relative(&mut self, bool);
+	fn set_relative(&mut self, enabled: bool);
 
 	/// `alGetSourcef(AL_GAIN)`
 	fn gain(&self) -> f32;
 	/// `alSourcef(AL_GAIN)`
-	fn set_gain(&mut self, f32) -> AltoResult<()>;
+	fn set_gain(&mut self, gain: f32) -> AltoResult<()>;
 
 	/// `alGetSourcef(AL_MIN_GAIN)`
 	fn min_gain(&self) -> f32;
 	/// `alSourcef(AL_MIN_GAIN)`
-	fn set_min_gain(&mut self, f32) -> AltoResult<()>;
+	fn set_min_gain(&mut self, min_gain: f32) -> AltoResult<()>;
 
 	/// `alGetSourcef(AL_MAX_GAIN)`
 	fn max_gain(&self) -> f32;
 	/// `alSourcef(AL_MAX_GAIN)`
-	fn set_max_gain(&mut self, f32) -> AltoResult<()>;
+	fn set_max_gain(&mut self, max_gain: f32) -> AltoResult<()>;
 
 	/// `alGetSourcef(AL_REFERENCE_DISTANCE)`
 	fn reference_distance(&self) -> f32;
 	/// `alSourcef(AL_REFERENCE_DISTANCE)`
-	fn set_reference_distance(&mut self, f32) -> AltoResult<()>;
+	fn set_reference_distance(&mut self, distance: f32) -> AltoResult<()>;
 
 	/// `alGetSourcef(AL_ROLLOFF_FACTOR)`
 	fn rolloff_factor(&self) -> f32;
 	/// `alSourcef(AL_ROLLOFF_FACTOR)`
-	fn set_rolloff_factor(&mut self, f32) -> AltoResult<()>;
+	fn set_rolloff_factor(&mut self, factor: f32) -> AltoResult<()>;
 
 	/// `alGetSourcef(AL_MAX_DISTANCE)`
 	fn max_distance(&self) -> f32;
 	/// `alSourcef(AL_MAX_DISTANCE)`
-	fn set_max_distance(&mut self, f32) -> AltoResult<()>;
+	fn set_max_distance(&mut self, distance: f32) -> AltoResult<()>;
 
 	/// `alGetSourcef(AL_PITCH)`
 	fn pitch(&self) -> f32;
 	/// `alSourcef(AL_PITCH)`
-	fn set_pitch(&mut self, f32) -> AltoResult<()>;
+	fn set_pitch(&mut self, pitch: f32) -> AltoResult<()>;
 
 	/// `alGetSourcefv(AL_POSITION)`
 	fn position<V: From<[f32; 3]>>(&self) -> V;
 	/// `alSourcefv(AL_POSITION)`
-	fn set_position<V: Into<[f32; 3]>>(&mut self, V) -> AltoResult<()>;
+	fn set_position<V: Into<[f32; 3]>>(&mut self, position: V) -> AltoResult<()>;
 
 	/// `alGetSourcefv(AL_VELOCITY)`
 	fn velocity<V: From<[f32; 3]>>(&self) -> V;
 	/// `alSourcefv(AL_VELOCITY)`
-	fn set_velocity<V: Into<[f32; 3]>>(&mut self, V) -> AltoResult<()>;
+	fn set_velocity<V: Into<[f32; 3]>>(&mut self, velocity: V) -> AltoResult<()>;
 
 	/// `alGetSourcefv(AL_DIRECTION)`
 	fn direction<V: From<[f32; 3]>>(&self) -> V;
 	/// `alSourcefv(AL_DIRECTION)`
-	fn set_direction<V: Into<[f32; 3]>>(&mut self, V) -> AltoResult<()>;
+	fn set_direction<V: Into<[f32; 3]>>(&mut self, direction: V) -> AltoResult<()>;
 
 	/// `alGetSourcef(AL_CONE_INNER_ANGLE)`
 	fn cone_inner_angle(&self) -> f32;
 	/// `alSourcef(AL_CONE_INNER_ANGLE)`
-	fn set_cone_inner_angle(&mut self, f32) -> AltoResult<()>;
+	fn set_cone_inner_angle(&mut self, angle: f32) -> AltoResult<()>;
 
 	/// `alGetSourcef(AL_CONE_OUTER_ANGLE)`
 	fn cone_outer_angle(&self) -> f32;
 	/// `alSourcef(AL_CONE_OUTER_ANGLE)`
-	fn set_cone_outer_angle(&mut self, f32) -> AltoResult<()>;
+	fn set_cone_outer_angle(&mut self, angle: f32) -> AltoResult<()>;
 
 	/// `alGetSourcef(AL_CONE_OUTER_GAIN)`
 	fn cone_outer_gain(&self) -> f32;
 	/// `alSourcef(AL_CONE_OUTER_GAIN)`
-	fn set_cone_outer_gain(&mut self, f32) -> AltoResult<()>;
+	fn set_cone_outer_gain(&mut self, gain: f32) -> AltoResult<()>;
 
 	/// `alGetSourcef(AL_SEC_OFFSET)`
 	fn sec_offset(&self) -> f32;
 	/// `alSourcef(AL_SEC_OFFSET)`
-	fn set_sec_offset(&mut self, f32) -> AltoResult<()>;
+	fn set_sec_offset(&mut self, offset: f32) -> AltoResult<()>;
 
 	/// `alGetSourcei(AL_SAMPLE_OFFSET)`
 	fn sample_offset(&self) -> sys::ALint;
 	/// `alSourcei(AL_SAMPLE_OFFSET)`
-	fn set_sample_offset(&mut self, sys::ALint) -> AltoResult<()>;
+	fn set_sample_offset(&mut self, offset: sys::ALint) -> AltoResult<()>;
 
 	/// `alGetSourcei(AL_BYTE_OFFSET)`
 	fn byte_offset(&self) -> sys::ALint;
 	/// `alSourcei(AL_BYTE_OFFSET)`
-	fn set_byte_offset(&mut self, sys::ALint) -> AltoResult<()>;
+	fn set_byte_offset(&mut self, offset: sys::ALint) -> AltoResult<()>;
 
 	/// `alGetSourcedvSOFT(AL_SEC_OFFSET_LATENCY_SOFT)`
 	/// Requires `AL_SOFT_source_latency`
@@ -216,14 +216,14 @@ pub unsafe trait Source {
 	fn soft_direct_channels(&self) -> bool;
 	/// `alSourcei(AL_DIRECT_CHANNELS_SOFT)`
 	/// Requires `AL_SOFT_direct_channels`
-	fn set_soft_direct_channels(&mut self, bool) -> AltoResult<()>;
+	fn set_soft_direct_channels(&mut self, enabled: bool) -> AltoResult<()>;
 
 	/// `alGetSourcei(AL_DISTANCE_MODEL)`
 	/// Requires `AL_EXT_source_distance_model`
 	fn distance_model(&self) -> DistanceModel;
 	/// `alSourcei(AL_DISTANCE_MODEL)`
 	/// Requires `AL_EXT_source_distance_model`
-	fn set_distance_model(&mut self, DistanceModel) -> AltoResult<()>;
+	fn set_distance_model(&mut self, model: DistanceModel) -> AltoResult<()>;
 
 	/// `alGetSourcei(AL_SOURCE_SPATIALIZATION_SOFT)`
 	/// Requires `AL_SOFT_source_spatialization`
@@ -275,28 +275,28 @@ pub unsafe trait Source {
 	fn air_absorption_factor(&self) -> f32;
 	/// `alSourcef(AL_AIR_ABSORPTION_FACTOR)`
 	/// Requires `ALC_EXT_EFX`
-	fn set_air_absorption_factor(&mut self, f32) -> AltoResult<()>;
+	fn set_air_absorption_factor(&mut self, factor: f32) -> AltoResult<()>;
 
 	/// `alGetSourcef(AL_ROOM_ROLLOFF_FACTOR)`
 	/// Requires `ALC_EXT_EFX`
 	fn room_rolloff_factor(&self) -> f32;
 	/// `alSourcef(AL_ROOM_ROLLOFF_FACTOR)`
 	/// Requires `ALC_EXT_EFX`
-	fn set_room_rolloff_factor(&mut self, f32) -> AltoResult<()>;
+	fn set_room_rolloff_factor(&mut self, factor: f32) -> AltoResult<()>;
 
 	/// `alGetSourcef(AL_CONE_OUTER_GAINHF)`
 	/// Requires `ALC_EXT_EFX`
 	fn cone_outer_gainhf(&self) -> f32;
 	/// `alSourcef(AL_CONE_OUTER_GAINHF)`
 	/// Requires `ALC_EXT_EFX`
-	fn set_cone_outer_gainhf(&mut self, f32) -> AltoResult<()>;
+	fn set_cone_outer_gainhf(&mut self, gain: f32) -> AltoResult<()>;
 
 	/// `alGetSourcei(AL_DIRECT_FILTER_GAINHF_AUTO)`
 	/// Requires `ALC_EXT_EFX`
 	fn direct_filter_gainhf_auto(&self) -> bool;
 	/// `alSourcei(AL_DIRECT_FILTER_GAINHF_AUTO)`
 	/// Requires `ALC_EXT_EFX`
-	fn set_direct_filter_gainhf_auto(&mut self, bool) -> AltoResult<()>;
+	fn set_direct_filter_gainhf_auto(&mut self, enabled: bool) -> AltoResult<()>;
 }
 
 

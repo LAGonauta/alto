@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 #[cfg(all(not(target_os = "emscripten"), feature = "dynamic"))]
 #[macro_use]
 
@@ -29,7 +30,7 @@ macro_rules! al_api {
 				$(pub $sym: libloading::Symbol<'lib, unsafe extern "C" fn ($($param: $param_ty),*) -> $ret_ty>,)*
 			}
 
-			#[ouroboros::self_referencing(pub_extras)]
+			#[ouroboros::self_referencing]
 			pub struct RentSymbols {
 				lib: Box<libloading::Library>,
 				#[borrows(lib)]
