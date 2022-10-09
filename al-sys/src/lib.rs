@@ -45,11 +45,10 @@ macro_rules! al_api {
 					AlApi::from_lib( unsafe { libloading::Library::new("libopenal.so") }
 						.or_else(|_| unsafe { libloading::Library::new("libopenal.dylib") })
 						.or_else(|_| unsafe { libloading::Library::new("OpenAL.framework/OpenAL") })
-						.or_else(|_| unsafe { libloading::Library::new("soft_oal.dll") })
 						.or_else(|_| unsafe { libloading::Library::new("OpenAL32.dll") })
+						.or_else(|_| unsafe { libloading::Library::new("soft_oal.dll") })
 					?)
 				}
-
 
 				pub fn load<P: AsRef<Path>>(path: P) -> Result<AlApi, libloading::Error> {
 					AlApi::from_lib(unsafe { libloading::Library::new(path.as_ref())? })
