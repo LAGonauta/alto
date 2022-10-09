@@ -1,7 +1,5 @@
 #[cfg(all(not(target_os = "emscripten"), feature = "dynamic"))]
 #[macro_use]
-extern crate rental;
-
 
 mod alc;
 mod al;
@@ -12,7 +10,6 @@ pub use alc::*;
 pub use al::*;
 pub use efx::*;
 pub use efx_presets::*;
-
 
 #[cfg(all(not(target_os = "emscripten"), feature = "dynamic"))]
 macro_rules! al_api {
@@ -27,29 +24,20 @@ macro_rules! al_api {
 
 			use super::*;
 
-
 			#[allow(non_snake_case)]
 			pub struct AlSymbols<'lib> {
 				$(pub $sym: libloading::Symbol<'lib, unsafe extern "C" fn ($($param: $param_ty),*) -> $ret_ty>,)*
 			}
 
-			rental!{
-				mod rent {
-					use super::libloading;
-
-					#[rental]
-					pub struct RentSymbols {
-						lib: Box<libloading::Library>,
-						syms: super::AlSymbols<'lib>,
-					}
-				}
+			#[ouroboros::self_referencing(pub_extras)]
+			pub struct RentSymbols {
+				lib: Box<libloading::Library>,
+				#[borrows(lib)]
+				#[covariant]
+				syms: super::AlSymbols<'this>
 			}
 
-			use self::rent::RentSymbols;
-
-
-			pub struct AlApi(rent::RentSymbols);
-
+			pub struct AlApi(RentSymbols);
 
 			impl AlApi {
 				pub fn load_default() -> io::Result<AlApi> {
@@ -68,11 +56,17 @@ macro_rules! al_api {
 
 
 				fn from_lib(lib: libloading::Library) -> io::Result<AlApi> {
-					match RentSymbols::try_new(Box::new(lib), |lib| Ok(AlSymbols{
-						$($sym: unsafe { lib.get(stringify!($sym).as_bytes())? },)*
-					})) {
+					let r = RentSymbolsTryBuilder {
+						lib: Box::new(lib),
+						syms_builder: |lib| {
+							Ok(AlSymbols{
+								$($sym: unsafe { lib.get(stringify!($sym).as_bytes())? },)*
+							})
+						},
+					}.try_build();
+					match r {
 						Ok(syms) => Ok(AlApi(syms)),
-						Err(rental::RentalError(e, _)) => return Err(e),
+						Err(e) => return Err(e),
 					}
 				}
 
@@ -80,7 +74,8 @@ macro_rules! al_api {
 				$(#[allow(non_snake_case)]
 				#[inline]
 				pub unsafe fn $sym(&self, $($param: $param_ty),*) -> $ret_ty {
-					self.0.rent(|s| (s.$sym)($($param),*))
+					let s = self.0.borrow_syms();
+					(s.$sym)($($param),*)
 				})*
 			}
 		}
@@ -136,7 +131,6 @@ macro_rules! al_api {
 		pub use al_api::AlApi;
 	};
 }
-
 
 al_api! {
 	alcCreateContext: unsafe extern "C" fn(device: *mut ALCdevice, attrlist: *const ALCint) -> *mut ALCcontext,

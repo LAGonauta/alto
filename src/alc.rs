@@ -135,7 +135,7 @@ pub unsafe trait DeviceObject: Any {
 	/// Raw handle as exposed by OpenAL.
 	fn as_raw(&self) -> *mut sys::ALCdevice;
 	/// `alcIsExtensionPresent()`
-	fn is_extension_present(&self, ext::Alc) -> bool;
+	fn is_extension_present(&self, _: ext::Alc) -> bool;
 	/// `alcGetIntegerv(ALC_CONNECTED)`
 	/// Requires `ALC_EXT_disconnect`
 	fn connected(&self) -> AltoResult<bool>;
@@ -170,8 +170,8 @@ pub struct OutputDevice(pub(crate) Arc<DeviceInner>);
 
 /// A sample frame that is supported as a loopback device output format.
 pub unsafe trait LoopbackFrame: SampleFrame {
-	fn channels(&ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint>;
-	fn sample_ty(&ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint>;
+	fn channels(_: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint>;
+	fn sample_ty(_: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint>;
 }
 
 

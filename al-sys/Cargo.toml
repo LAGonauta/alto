@@ -12,7 +12,7 @@ categories = ["multimedia::audio", "external-ffi-bindings"]
 
 [features]
 default = ["dynamic"]
-dynamic = ["libloading", "rental"]
+dynamic = ["libloading", "ouroboros"]
 
 [dependencies]
 
@@ -21,4 +21,4 @@ cmake = "0.1.40"
 
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
 libloading = { version = "0.5", optional = true }
-rental = { version = "0.5.0", optional = true }
+ouroboros = { version = "0.15", optional = true}

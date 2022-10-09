@@ -15,6 +15,6 @@ default = ["dynamic"]
 dynamic = ["al-sys/dynamic"]
 
 [dependencies]
-lazy_static = "0.2.1"
-parking_lot = "0.4.4"
+lazy_static = "1.4"
+parking_lot = "0.12"
 al-sys = { version = "0.6.0", path = "al-sys", default-features = false }
