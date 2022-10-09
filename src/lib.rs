@@ -17,29 +17,23 @@
 extern crate lazy_static;
 extern crate parking_lot;
 extern crate al_sys;
+extern crate libloading;
 
 use std::fmt;
-use std::io;
-
 
 mod alc;
 pub use alc::*;
 
-
 mod al;
 pub use al::*;
 
-
 pub mod ext;
 
-
 pub mod efx;
-
 
 pub mod sys {
 	pub use al_sys::*;
 }
-
 
 /// An error as reported by `alcGetError` or `alGetError`, plus some Alto specific variants.
 #[derive(Debug)]
@@ -72,7 +66,7 @@ pub enum AltoError {
 	/// A resource belongs to another context and is not eligible.
 	WrongContext,
 	/// There was an underlying IO error, usually from a failure when loading the OpenAL dylib. Alto specific.
-	Io(io::Error),
+	Library(libloading::Error),
 }
 
 
@@ -123,16 +117,16 @@ impl fmt::Display for AltoError {
 			AltoError::NullError => "ALTO ERROR: Return value is NULL with no error code".to_owned(),
 			AltoError::WrongDevice => "ALTO ERROR: Resource used on wrong device".to_owned(),
 			AltoError::WrongContext => "ALTO ERROR: Resource used on wrong device".to_owned(),
-			AltoError::Io(ref io) => io.to_string(),
+			AltoError::Library(ref io) => io.to_string(),
 		};
 		write!(f, "{}", val)
 	}
 }
 
 
-impl From<io::Error> for AltoError {
-	fn from(io: io::Error) -> AltoError {
-		AltoError::Io(io)
+impl From<libloading::Error> for AltoError {
+	fn from(io: libloading::Error) -> AltoError {
+		AltoError::Library(io)
 	}
 }
 

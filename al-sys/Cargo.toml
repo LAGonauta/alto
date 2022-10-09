@@ -20,5 +20,5 @@ dynamic = ["libloading", "ouroboros"]
 cmake = "0.1.40"
 
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
-libloading = { version = "0.5", optional = true }
+libloading = { version = "0.7", optional = true }
 ouroboros = { version = "0.15", optional = true}

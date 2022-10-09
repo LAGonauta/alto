@@ -41,22 +41,22 @@ macro_rules! al_api {
 			pub struct AlApi(RentSymbols);
 
 			impl AlApi {
-				pub fn load_default() -> io::Result<AlApi> {
-					AlApi::from_lib(libloading::Library::new("libopenal.so")
-						.or_else(|_| libloading::Library::new("libopenal.dylib"))
-						.or_else(|_| libloading::Library::new("OpenAL.framework/OpenAL"))
-						.or_else(|_| libloading::Library::new("soft_oal.dll"))
-						.or_else(|_| libloading::Library::new("OpenAL32.dll"))
+				pub fn load_default() -> Result<AlApi, libloading::Error> {
+					AlApi::from_lib( unsafe { libloading::Library::new("libopenal.so") }
+						.or_else(|_| unsafe { libloading::Library::new("libopenal.dylib") })
+						.or_else(|_| unsafe { libloading::Library::new("OpenAL.framework/OpenAL") })
+						.or_else(|_| unsafe { libloading::Library::new("soft_oal.dll") })
+						.or_else(|_| unsafe { libloading::Library::new("OpenAL32.dll") })
 					?)
 				}
 
 
-				pub fn load<P: AsRef<Path>>(path: P) -> io::Result<AlApi> {
-					AlApi::from_lib(libloading::Library::new(path.as_ref())?)
+				pub fn load<P: AsRef<Path>>(path: P) -> Result<AlApi, libloading::Error> {
+					AlApi::from_lib(unsafe { libloading::Library::new(path.as_ref())? })
 				}
 
 
-				fn from_lib(lib: libloading::Library) -> io::Result<AlApi> {
+				fn from_lib(lib: libloading::Library) -> Result<AlApi, libloading::Error> {
 					let r = RentSymbolsTryBuilder {
 						lib: Box::new(lib),
 						syms_builder: |lib| {
