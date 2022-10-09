@@ -1,8 +1,11 @@
+#[cfg(test)]
 extern crate alto;
+extern crate serial_test;
 
 use std::ffi::CStr;
 
 use alto::{Alto, Capture, DeviceObject, Stereo};
+use serial_test::serial;
 
 type MyCapture = Capture<Stereo<i16>>;
 
@@ -15,11 +18,13 @@ fn open_cap(a: &Alto, spec: Option<&CStr>) -> MyCapture {
 }
 
 #[test]
+#[serial]
 fn load_default() {
     load_alto();
 }
 
 #[test]
+#[serial]
 fn default_output() {
     let a = load_alto();
 
@@ -34,6 +39,7 @@ fn default_output() {
 }
 
 #[test]
+#[serial]
 fn specified_output() {
     let a = load_alto();
     let devices = a.enumerate_outputs();
@@ -45,6 +51,7 @@ fn specified_output() {
 }
 
 #[test]
+#[serial]
 fn default_input() {
     let a = load_alto();
 
@@ -56,6 +63,7 @@ fn default_input() {
 }
 
 #[test]
+#[serial]
 fn specified_input() {
     let a = load_alto();
     let devices = a.enumerate_captures();

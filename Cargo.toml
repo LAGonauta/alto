@@ -19,3 +19,6 @@ libloading = { version = "0.7", optional = false }
 lazy_static = "1.4"
 parking_lot = "0.12"
 al-sys = { version = "0.6.0", path = "al-sys", default-features = false }
+
+[dev-dependencies]
+serial_test = "0.9"
