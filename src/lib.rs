@@ -18,7 +18,6 @@ extern crate lazy_static;
 extern crate parking_lot;
 extern crate al_sys;
 
-use std::error::Error as StdError;
 use std::fmt;
 use std::io;
 
@@ -108,31 +107,25 @@ impl AltoError {
 
 impl fmt::Display for AltoError {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-		write!(f, "{}", self.to_string())
-	}
-}
+		let val = match *self {
+			AltoError::InvalidDevice => "ALTO ERROR: ALC Invalid Device".to_owned(),
+			AltoError::InvalidContext => "ALTO ERROR: ALC Invalid Context".to_owned(),
+			AltoError::InvalidName => "ALTO ERROR: AL Invalid Name".to_owned(),
+			AltoError::InvalidEnum => "ALTO ERROR: ALC Invalid Enum".to_owned(),
+			AltoError::InvalidValue => "ALTO ERROR: ALC Invalid Value".to_owned(),
+			AltoError::InvalidOperation => "ALTO ERROR: AL Invalid Operation".to_owned(),
+			AltoError::OutOfMemory => "ALTO ERROR: ALC Out of Memory".to_owned(),
+			AltoError::UnknownAlcError(..) => "ALTO ERROR: Unknown ALC error".to_owned(),
+			AltoError::UnknownAlError(..) => "ALTO ERROR: Unknown AL error".to_owned(),
 
-
-impl StdError for AltoError {
-	fn description(&self) -> &str {
-		match *self {
-			AltoError::InvalidDevice => "ALTO ERROR: ALC Invalid Device",
-			AltoError::InvalidContext => "ALTO ERROR: ALC Invalid Context",
-			AltoError::InvalidName => "ALTO ERROR: AL Invalid Name",
-			AltoError::InvalidEnum => "ALTO ERROR: ALC Invalid Enum",
-			AltoError::InvalidValue => "ALTO ERROR: ALC Invalid Value",
-			AltoError::InvalidOperation => "ALTO ERROR: AL Invalid Operation",
-			AltoError::OutOfMemory => "ALTO ERROR: ALC Out of Memory",
-			AltoError::UnknownAlcError(..) => "ALTO ERROR: Unknown ALC error",
-			AltoError::UnknownAlError(..) => "ALTO ERROR: Unknown AL error",
-
-			AltoError::UnsupportedVersion{..} => "ALTO ERROR: Unsupported Version",
-			AltoError::ExtensionNotPresent => "ALTO ERROR: Extension Not Present",
-			AltoError::NullError => "ALTO ERROR: Return value is NULL with no error code",
-			AltoError::WrongDevice => "ALTO ERROR: Resource used on wrong device",
-			AltoError::WrongContext => "ALTO ERROR: Resource used on wrong device",
-			AltoError::Io(ref io) => io.description(),
-		}
+			AltoError::UnsupportedVersion{..} => "ALTO ERROR: Unsupported Version".to_owned(),
+			AltoError::ExtensionNotPresent => "ALTO ERROR: Extension Not Present".to_owned(),
+			AltoError::NullError => "ALTO ERROR: Return value is NULL with no error code".to_owned(),
+			AltoError::WrongDevice => "ALTO ERROR: Resource used on wrong device".to_owned(),
+			AltoError::WrongContext => "ALTO ERROR: Resource used on wrong device".to_owned(),
+			AltoError::Io(ref io) => io.to_string(),
+		};
+		write!(f, "{}", val)
 	}
 }
 
@@ -145,7 +138,7 @@ impl From<io::Error> for AltoError {
 
 
 impl From<ext::ExtensionError> for AltoError {
-	fn from(err: ext::ExtensionError) -> AltoError {
+	fn from(_: ext::ExtensionError) -> AltoError {
 		AltoError::ExtensionNotPresent
 	}
 }
