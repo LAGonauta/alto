@@ -20,7 +20,6 @@ macro_rules! al_api {
 		mod al_api {
 			extern crate libloading;
 
-			use std::io;
 			use std::path::Path;
 
 			use super::*;
