@@ -123,6 +123,14 @@ impl fmt::Display for AltoError {
 	}
 }
 
+impl std::error::Error for AltoError {
+	fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+		match self {
+			Self::Library(e) => Some(e),
+			_ => None
+		}
+	}
+}
 
 impl From<libloading::Error> for AltoError {
 	fn from(io: libloading::Error) -> AltoError {
