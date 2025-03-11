@@ -132,6 +132,16 @@ pub enum ExtMcFormat {
 }
 
 
+/// Formats provided by `AL_EXT_fixed32`.
+#[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
+pub enum ExtFixed32 {
+	/// `AL_FORMAT_MONO32`
+	MonoI32,
+	/// `AL_FORMAT_STEREO32`
+	StereoI32,
+}
+
+
 /// Formats provided by `AL_EXT_MULAW`.
 #[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
 pub enum ExtMuLawFormat {

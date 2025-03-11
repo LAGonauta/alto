@@ -396,6 +396,7 @@ impl DeviceInner {
 			ext::Alc::SoftHrtf => self.exts.ALC_SOFT_HRTF().is_ok(),
 			ext::Alc::SoftOutputLimiter => self.exts.ALC_SOFT_output_limiter().is_ok(),
 			ext::Alc::SoftPauseDevice => self.exts.ALC_SOFT_pause_device().is_ok(),
+			ext::Alc::ThreadLocalContext => self.exts.ALC_EXT_thread_local_context().is_ok(),
 		}
 	}
 

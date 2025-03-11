@@ -53,7 +53,6 @@ macro_rules! al_api {
 					AlApi::from_lib(unsafe { libloading::Library::new(path.as_ref())? })
 				}
 
-
 				fn from_lib(lib: libloading::Library) -> Result<AlApi, libloading::Error> {
 					let r = RentSymbolsTryBuilder {
 						lib: Box::new(lib),
@@ -68,7 +67,6 @@ macro_rules! al_api {
 						Err(e) => return Err(e),
 					}
 				}
-
 
 				$(#[allow(non_snake_case)]
 				#[inline]

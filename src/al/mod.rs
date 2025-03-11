@@ -385,6 +385,7 @@ impl Context {
 			ext::Al::SoftGainClampEx => self.0.exts.AL_SOFT_gain_clamp_ex().is_ok(),
 			ext::Al::StereoAngles => self.0.exts.AL_EXT_STEREO_ANGLES().is_ok(),
 			ext::Al::SourceRadius => self.0.exts.AL_EXT_SOURCE_RADIUS().is_ok(),
+			ext::Al::Fixed32 => self.0.exts.AL_EXT_fixed32().is_ok(),
 		}
 	}
 
@@ -637,7 +638,7 @@ impl Context {
 
 
 	fn make_raw_current(dev: &Device, ctx: *mut sys::ALCcontext) -> Option<MutexGuard<()>> {
-		if let Ok(&ext::ALC_EXT_thread_local_context{alcSetThreadContext: Ok(astc), ..}) = dev.0.alto.0.exts.ALC_EXT_thread_local_context() {
+		if let Ok(&ext::ALC_EXT_thread_local_context{alcSetThreadContext: Ok(astc), ..}) = dev.0.exts.ALC_EXT_thread_local_context() {
 			unsafe { astc(ctx); }
 			None
 		} else {
