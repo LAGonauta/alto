@@ -15,6 +15,7 @@ pub enum Format {
 	ExtBFormat(ExtBFormat),
 	ExtDouble(ExtDoubleFormat),
 	ExtFloat32(ExtFloat32Format),
+	ExtFixed32(ExtFixed32Format),
 	ExtIma4(ExtIma4Format),
 	ExtMcFormats(ExtMcFormat),
 	ExtMuLaw(ExtMuLawFormat),
@@ -104,41 +105,41 @@ pub enum ExtMcFormat {
 	/// `AL_FORMAT_QUAD16`
 	QuadI16,
 	/// `AL_FORMAT_QUAD32`
-	QuadF32,
+	QuadI32,
 	/// `AL_FORMAT_REAR8`
 	RearU8,
 	/// `AL_FORMAT_REAR16`
 	RearI16,
 	/// `AL_FORMAT_REAR32`
-	RearF32,
+	RearI32,
 	/// `AL_FORMAT_51CHN8`
 	Mc51ChnU8,
 	/// `AL_FORMAT_51CHN16`
 	Mc51ChnI16,
 	/// `AL_FORMAT_51CHN32`
-	Mc51ChnF32,
+	Mc51ChnI32,
 	/// `AL_FORMAT_61CHN8`
 	Mc61ChnU8,
 	/// `AL_FORMAT_61CHN16`
 	Mc61ChnI16,
 	/// `AL_FORMAT_61CHN32`
-	Mc61ChnF32,
+	Mc61ChnI32,
 	/// `AL_FORMAT_71CHN8`
 	Mc71ChnU8,
 	/// `AL_FORMAT_71CHN16`
 	Mc71ChnI16,
 	/// `AL_FORMAT_71CHN32`
-	Mc71ChnF32,
+	Mc71ChnI32,
 }
 
 
 /// Formats provided by `AL_EXT_fixed32`.
 #[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
-pub enum ExtFixed32 {
+pub enum ExtFixed32Format {
 	/// `AL_FORMAT_MONO32`
-	MonoI32,
+	Mono,
 	/// `AL_FORMAT_STEREO32`
-	StereoI32,
+	Stereo,
 }
 
 
@@ -331,6 +332,7 @@ impl Format {
 			Format::ExtBFormat(f) => f.into_raw(ctx),
 			Format::ExtDouble(f) => f.into_raw(ctx),
 			Format::ExtFloat32(f) => f.into_raw(ctx),
+			Format::ExtFixed32(f) => f.into_raw(ctx),
 			Format::ExtIma4(f) => f.into_raw(ctx),
 			Format::ExtMcFormats(f) => f.into_raw(ctx),
 			Format::ExtMuLaw(f) => f.into_raw(ctx),
@@ -397,6 +399,15 @@ impl ExtFloat32Format {
 	}
 }
 
+impl ExtFixed32Format {
+	pub fn into_raw(self, ctx: Option<&Context>) -> AltoResult<sys::ALint> {
+		ctx.ok_or(AltoError::ExtensionNotPresent).and_then(|ctx| match self {
+			ExtFixed32Format::Mono => Ok(ctx.0.exts.AL_EXT_fixed32()?.AL_FORMAT_MONO32?),
+			ExtFixed32Format::Stereo => Ok(ctx.0.exts.AL_EXT_fixed32()?.AL_FORMAT_STEREO32?),
+		})
+	}
+}
+
 
 impl ExtIma4Format {
 	pub fn into_raw(self, ctx: Option<&Context>) -> AltoResult<sys::ALint> {
@@ -413,19 +424,19 @@ impl ExtMcFormat {
 		ctx.ok_or(AltoError::ExtensionNotPresent).and_then(|ctx| match self {
 			ExtMcFormat::QuadU8 => Ok(ctx.0.exts.AL_EXT_MCFORMATS()?.AL_FORMAT_QUAD8?),
 			ExtMcFormat::QuadI16 => Ok(ctx.0.exts.AL_EXT_MCFORMATS()?.AL_FORMAT_QUAD16?),
-			ExtMcFormat::QuadF32 => Ok(ctx.0.exts.AL_EXT_MCFORMATS()?.AL_FORMAT_QUAD32?),
+			ExtMcFormat::QuadI32 => Ok(ctx.0.exts.AL_EXT_MCFORMATS()?.AL_FORMAT_QUAD32?),
 			ExtMcFormat::RearU8 => Ok(ctx.0.exts.AL_EXT_MCFORMATS()?.AL_FORMAT_REAR8?),
 			ExtMcFormat::RearI16 => Ok(ctx.0.exts.AL_EXT_MCFORMATS()?.AL_FORMAT_REAR16?),
-			ExtMcFormat::RearF32 => Ok(ctx.0.exts.AL_EXT_MCFORMATS()?.AL_FORMAT_REAR32?),
+			ExtMcFormat::RearI32 => Ok(ctx.0.exts.AL_EXT_MCFORMATS()?.AL_FORMAT_REAR32?),
 			ExtMcFormat::Mc51ChnU8 => Ok(ctx.0.exts.AL_EXT_MCFORMATS()?.AL_FORMAT_51CHN8?),
 			ExtMcFormat::Mc51ChnI16 => Ok(ctx.0.exts.AL_EXT_MCFORMATS()?.AL_FORMAT_51CHN16?),
-			ExtMcFormat::Mc51ChnF32 => Ok(ctx.0.exts.AL_EXT_MCFORMATS()?.AL_FORMAT_51CHN32?),
+			ExtMcFormat::Mc51ChnI32 => Ok(ctx.0.exts.AL_EXT_MCFORMATS()?.AL_FORMAT_51CHN32?),
 			ExtMcFormat::Mc61ChnU8 => Ok(ctx.0.exts.AL_EXT_MCFORMATS()?.AL_FORMAT_61CHN8?),
 			ExtMcFormat::Mc61ChnI16 => Ok(ctx.0.exts.AL_EXT_MCFORMATS()?.AL_FORMAT_61CHN16?),
-			ExtMcFormat::Mc61ChnF32 => Ok(ctx.0.exts.AL_EXT_MCFORMATS()?.AL_FORMAT_61CHN32?),
+			ExtMcFormat::Mc61ChnI32 => Ok(ctx.0.exts.AL_EXT_MCFORMATS()?.AL_FORMAT_61CHN32?),
 			ExtMcFormat::Mc71ChnU8 => Ok(ctx.0.exts.AL_EXT_MCFORMATS()?.AL_FORMAT_71CHN8?),
 			ExtMcFormat::Mc71ChnI16 => Ok(ctx.0.exts.AL_EXT_MCFORMATS()?.AL_FORMAT_71CHN16?),
-			ExtMcFormat::Mc71ChnF32 => Ok(ctx.0.exts.AL_EXT_MCFORMATS()?.AL_FORMAT_71CHN32?),
+			ExtMcFormat::Mc71ChnI32 => Ok(ctx.0.exts.AL_EXT_MCFORMATS()?.AL_FORMAT_71CHN32?),
 		})
 	}
 }
@@ -488,6 +499,12 @@ unsafe impl SampleFrame for Mono<i16> {
 	#[inline] fn len() -> usize { 1 }
 	#[inline] fn format() -> Format { Format::Standard(StandardFormat::MonoI16) }
 }
+unsafe impl SampleFrame for Mono<i32> {
+	type Sample = i32;
+
+	#[inline] fn len() -> usize { 1 }
+	#[inline] fn format() -> Format { Format::ExtFixed32(ExtFixed32Format::Mono) }
+}
 unsafe impl SampleFrame for Mono<f32> {
 	type Sample = f32;
 
@@ -525,6 +542,12 @@ unsafe impl SampleFrame for Stereo<i16> {
 
 	#[inline] fn len() -> usize { 2 }
 	#[inline] fn format() -> Format { Format::Standard(StandardFormat::StereoI16) }
+}
+unsafe impl SampleFrame for Stereo<i32> {
+	type Sample = i32;
+
+	#[inline] fn len() -> usize { 2 }
+	#[inline] fn format() -> Format { Format::ExtFixed32(ExtFixed32Format::Stereo) }
 }
 unsafe impl SampleFrame for Stereo<f32> {
 	type Sample = f32;
@@ -564,11 +587,11 @@ unsafe impl SampleFrame for McRear<i16> {
 	#[inline] fn len() -> usize { 1 }
 	#[inline] fn format() -> Format { Format::ExtMcFormats(ExtMcFormat::RearI16)  }
 }
-unsafe impl SampleFrame for McRear<f32> {
-	type Sample = f32;
+unsafe impl SampleFrame for McRear<i32> {
+	type Sample = i32;
 
 	#[inline] fn len() -> usize { 1 }
-	#[inline] fn format() -> Format { Format::ExtMcFormats(ExtMcFormat::RearF32) }
+	#[inline] fn format() -> Format { Format::ExtMcFormats(ExtMcFormat::RearI32) }
 }
 unsafe impl SampleFrame for McRear<MuLawSample> {
 	type Sample = MuLawSample;
@@ -590,11 +613,11 @@ unsafe impl SampleFrame for McQuad<i16> {
 	#[inline] fn len() -> usize { 4 }
 	#[inline] fn format() -> Format { Format::ExtMcFormats(ExtMcFormat::QuadI16)  }
 }
-unsafe impl SampleFrame for McQuad<f32> {
-	type Sample = f32;
+unsafe impl SampleFrame for McQuad<i32> {
+	type Sample = i32;
 
 	#[inline] fn len() -> usize { 4 }
-	#[inline] fn format() -> Format { Format::ExtMcFormats(ExtMcFormat::QuadF32) }
+	#[inline] fn format() -> Format { Format::ExtMcFormats(ExtMcFormat::QuadI32) }
 }
 unsafe impl SampleFrame for McQuad<MuLawSample> {
 	type Sample = MuLawSample;
@@ -616,11 +639,11 @@ unsafe impl SampleFrame for Mc51Chn<i16> {
 	#[inline] fn len() -> usize { 6 }
 	#[inline] fn format() -> Format { Format::ExtMcFormats(ExtMcFormat::Mc51ChnI16)  }
 }
-unsafe impl SampleFrame for Mc51Chn<f32> {
-	type Sample = f32;
+unsafe impl SampleFrame for Mc51Chn<i32> {
+	type Sample = i32;
 
 	#[inline] fn len() -> usize { 6 }
-	#[inline] fn format() -> Format { Format::ExtMcFormats(ExtMcFormat::Mc51ChnF32) }
+	#[inline] fn format() -> Format { Format::ExtMcFormats(ExtMcFormat::Mc51ChnI32) }
 }
 unsafe impl SampleFrame for Mc51Chn<MuLawSample> {
 	type Sample = MuLawSample;
@@ -642,11 +665,11 @@ unsafe impl SampleFrame for Mc61Chn<i16> {
 	#[inline] fn len() -> usize { 7 }
 	#[inline] fn format() -> Format { Format::ExtMcFormats(ExtMcFormat::Mc61ChnI16)  }
 }
-unsafe impl SampleFrame for Mc61Chn<f32> {
-	type Sample = f32;
+unsafe impl SampleFrame for Mc61Chn<i32> {
+	type Sample = i32;
 
 	#[inline] fn len() -> usize { 7 }
-	#[inline] fn format() -> Format { Format::ExtMcFormats(ExtMcFormat::Mc61ChnF32) }
+	#[inline] fn format() -> Format { Format::ExtMcFormats(ExtMcFormat::Mc61ChnI32) }
 }
 unsafe impl SampleFrame for Mc61Chn<MuLawSample> {
 	type Sample = MuLawSample;
@@ -668,11 +691,11 @@ unsafe impl SampleFrame for Mc71Chn<i16> {
 	#[inline] fn len() -> usize { 8 }
 	#[inline] fn format() -> Format { Format::ExtMcFormats(ExtMcFormat::Mc71ChnI16)  }
 }
-unsafe impl SampleFrame for Mc71Chn<f32> {
-	type Sample = f32;
+unsafe impl SampleFrame for Mc71Chn<i32> {
+	type Sample = i32;
 
 	#[inline] fn len() -> usize { 8 }
-	#[inline] fn format() -> Format { Format::ExtMcFormats(ExtMcFormat::Mc71ChnF32) }
+	#[inline] fn format() -> Format { Format::ExtMcFormats(ExtMcFormat::Mc71ChnI32) }
 }
 unsafe impl SampleFrame for Mc71Chn<MuLawSample> {
 	type Sample = MuLawSample;
@@ -784,10 +807,10 @@ unsafe impl LoopbackFrame for McQuad<i16>
 	fn channels(sl: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint> { Ok(sl.ALC_QUAD_SOFT?) }
 	fn sample_ty(sl: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint> { Ok(sl.ALC_SHORT_SOFT?) }
 }
-unsafe impl LoopbackFrame for McQuad<f32>
+unsafe impl LoopbackFrame for McQuad<i32>
 {
 	fn channels(sl: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint> { Ok(sl.ALC_QUAD_SOFT?) }
-	fn sample_ty(sl: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint> { Ok(sl.ALC_FLOAT_SOFT?) }
+	fn sample_ty(sl: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint> { Ok(sl.ALC_INT_SOFT?) }
 }
 
 
@@ -801,10 +824,10 @@ unsafe impl LoopbackFrame for Mc51Chn<i16>
 	fn channels(sl: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint> { Ok(sl.ALC_5POINT1_SOFT?) }
 	fn sample_ty(sl: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint> { Ok(sl.ALC_SHORT_SOFT?) }
 }
-unsafe impl LoopbackFrame for Mc51Chn<f32>
+unsafe impl LoopbackFrame for Mc51Chn<i32>
 {
 	fn channels(sl: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint> { Ok(sl.ALC_5POINT1_SOFT?) }
-	fn sample_ty(sl: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint> { Ok(sl.ALC_FLOAT_SOFT?) }
+	fn sample_ty(sl: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint> { Ok(sl.ALC_INT_SOFT?) }
 }
 
 
@@ -818,10 +841,10 @@ unsafe impl LoopbackFrame for Mc61Chn<i16>
 	fn channels(sl: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint> { Ok(sl.ALC_6POINT1_SOFT?) }
 	fn sample_ty(sl: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint> { Ok(sl.ALC_SHORT_SOFT?) }
 }
-unsafe impl LoopbackFrame for Mc61Chn<f32>
+unsafe impl LoopbackFrame for Mc61Chn<i32>
 {
 	fn channels(sl: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint> { Ok(sl.ALC_6POINT1_SOFT?) }
-	fn sample_ty(sl: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint> { Ok(sl.ALC_FLOAT_SOFT?) }
+	fn sample_ty(sl: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint> { Ok(sl.ALC_INT_SOFT?) }
 }
 
 
@@ -835,10 +858,10 @@ unsafe impl LoopbackFrame for Mc71Chn<i16>
 	fn channels(sl: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint> { Ok(sl.ALC_7POINT1_SOFT?) }
 	fn sample_ty(sl: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint> { Ok(sl.ALC_SHORT_SOFT?) }
 }
-unsafe impl LoopbackFrame for Mc71Chn<f32>
+unsafe impl LoopbackFrame for Mc71Chn<i32>
 {
 	fn channels(sl: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint> { Ok(sl.ALC_7POINT1_SOFT?) }
-	fn sample_ty(sl: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint> { Ok(sl.ALC_FLOAT_SOFT?) }
+	fn sample_ty(sl: &ext::ALC_SOFT_loopback) -> AltoResult<sys::ALint> { Ok(sl.ALC_INT_SOFT?) }
 }
 
 
